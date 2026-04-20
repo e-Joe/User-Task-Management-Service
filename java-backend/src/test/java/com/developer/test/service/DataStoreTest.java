@@ -41,6 +41,20 @@ class DataStoreTest {
     }
 
     @Test
+    void createUser_shouldRejectDuplicateEmail() {
+        ValidationException ex = assertThrows(ValidationException.class,
+                () -> dataStore.createUser("Duplicate", "john@example.com", "dev"));
+
+        assertTrue(ex.getMessage().contains("already exists"));
+    }
+
+    @Test
+    void createUser_shouldRejectDuplicateEmailCaseInsensitive() {
+        assertThrows(ValidationException.class,
+                () -> dataStore.createUser("Duplicate", "JOHN@EXAMPLE.COM", "dev"));
+    }
+
+    @Test
     void createUser_shouldIncrementIds() {
         User first = dataStore.createUser("First", "first@test.com", "dev");
         User second = dataStore.createUser("Second", "second@test.com", "dev");

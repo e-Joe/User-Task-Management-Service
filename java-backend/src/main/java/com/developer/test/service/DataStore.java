@@ -94,6 +94,11 @@ public class DataStore {
      * @return the created user
      */
     public User createUser(String name, String email, String role) {
+        boolean emailExists = users.values().stream()
+                .anyMatch(u -> u.getEmail().equalsIgnoreCase(email));
+        if (emailExists) {
+            throw new ValidationException("Email '" + email + "' already exists");
+        }
         int id = nextUserId.getAndIncrement();
         User user = new User(id, name, email, role);
         users.put(id, user);
