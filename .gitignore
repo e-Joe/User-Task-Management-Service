@@ -1,0 +1,17 @@
+# Java
+java-backend/target/
+*.class
+*.jar
+
+# Node
+node-backend/node_modules/
+react-frontend/node_modules/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# Env
+.env
