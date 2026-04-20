@@ -5,6 +5,8 @@ import com.developer.test.exception.ValidationException;
 import com.developer.test.model.Task;
 import com.developer.test.model.User;
 import com.developer.test.dto.StatsResponse;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -42,14 +44,17 @@ public class DataStore {
         nextTaskId.set(4);
     }
 
+    @Cacheable("users")
     public List<User> getUsers() {
         return new ArrayList<>(users.values());
     }
 
+    @Cacheable(value = "user", key = "#id")
     public User getUserById(int id) {
         return users.get(id);
     }
 
+    @Cacheable(value = "tasks", key = "#status + '-' + #userId")
     public List<Task> getTasks(String status, String userId) {
         List<Task> allTasks = new ArrayList<>(tasks.values());
         
@@ -63,6 +68,7 @@ public class DataStore {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable("stats")
     public StatsResponse getStats() {
         StatsResponse stats = new StatsResponse();
         stats.getUsers().setTotal(users.size());
@@ -93,6 +99,7 @@ public class DataStore {
      * @param role  the user's role
      * @return the created user
      */
+    @CacheEvict(value = {"users", "user", "stats"}, allEntries = true)
     public User createUser(String name, String email, String role) {
         boolean emailExists = users.values().stream()
                 .anyMatch(u -> u.getEmail().equalsIgnoreCase(email));
@@ -115,6 +122,7 @@ public class DataStore {
      * @return the created task
      * @throws ValidationException if status is invalid or userId does not exist
      */
+    @CacheEvict(value = {"tasks", "stats"}, allEntries = true)
     public Task createTask(String title, String status, int userId) {
         validateStatus(status);
         if (!userExists(userId)) {
@@ -137,6 +145,7 @@ public class DataStore {
      * @throws ResourceNotFoundException if the task does not exist
      * @throws ValidationException       if status or userId is invalid
      */
+    @CacheEvict(value = {"tasks", "stats"}, allEntries = true)
     public Task updateTask(int id, String title, String status, Integer userId) {
         Task task = tasks.get(id);
         if (task == null) {
