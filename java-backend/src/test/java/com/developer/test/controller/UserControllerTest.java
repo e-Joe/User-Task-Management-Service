@@ -30,7 +30,7 @@ class UserControllerTest {
     @Test
     void getUsers_shouldReturnUsersList() throws Exception {
         when(dataStore.getUsers()).thenReturn(List.of(
-                new User(1, "John", "john@test.com", "dev")
+                createUser(1, "John", "john@test.com", "dev")
         ));
 
         mockMvc.perform(get("/api/users"))
@@ -42,7 +42,7 @@ class UserControllerTest {
     @Test
     void createUser_withValidData_shouldReturn201() throws Exception {
         when(dataStore.createUser(anyString(), anyString(), anyString()))
-                .thenReturn(new User(1, "Ilija", "ilija@test.com", "developer"));
+                .thenReturn(createUser(1, "Ilija", "ilija@test.com", "developer"));
 
         mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -76,5 +76,11 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isBadRequest());
+    }
+
+    private User createUser(int id, String name, String email, String role) {
+        User user = new User(name, email, role);
+        user.setId(id);
+        return user;
     }
 }

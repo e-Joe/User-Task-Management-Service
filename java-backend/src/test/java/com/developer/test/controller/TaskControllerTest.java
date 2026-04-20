@@ -31,7 +31,7 @@ class TaskControllerTest {
     @Test
     void getTasks_shouldReturnTasksList() throws Exception {
         when(dataStore.getTasks(any(), any())).thenReturn(List.of(
-                new Task(1, "Task 1", "pending", 1)
+                createTask(1, "Task 1", "pending", 1)
         ));
 
         mockMvc.perform(get("/api/tasks"))
@@ -43,7 +43,7 @@ class TaskControllerTest {
     @Test
     void createTask_withValidData_shouldReturn201() throws Exception {
         when(dataStore.createTask(anyString(), anyString(), anyInt()))
-                .thenReturn(new Task(1, "New Task", "pending", 1));
+                .thenReturn(createTask(1, "New Task", "pending", 1));
 
         mockMvc.perform(post("/api/tasks")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -77,7 +77,7 @@ class TaskControllerTest {
     @Test
     void updateTask_withValidData_shouldReturn200() throws Exception {
         when(dataStore.updateTask(eq(1), isNull(), eq("completed"), isNull()))
-                .thenReturn(new Task(1, "Task 1", "completed", 1));
+                .thenReturn(createTask(1, "Task 1", "completed", 1));
 
         mockMvc.perform(put("/api/tasks/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -96,5 +96,11 @@ class TaskControllerTest {
                         .content("{\"status\":\"completed\"}"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error").exists());
+    }
+
+    private Task createTask(int id, String title, String status, int userId) {
+        Task task = new Task(title, status, userId);
+        task.setId(id);
+        return task;
     }
 }

@@ -2,24 +2,35 @@ package com.developer.test.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "users")
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty("id")
     private int id;
-    
+
     @JsonProperty("name")
     private String name;
-    
+
+    @Column(unique = true)
     @JsonProperty("email")
     private String email;
-    
+
     @JsonProperty("role")
     private String role;
 
     public User() {
     }
 
-    public User(int id, String name, String email, String role) {
-        this.id = id;
+    public User(String name, String email, String role) {
         this.name = name;
         this.email = email;
         this.role = role;
